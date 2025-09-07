@@ -1,16 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
     const button = document.getElementById('bruhButton');
-    const input = document.getElementById('bruhField');
     const laugh = document.getElementById('laughSound');
     const sike = document.getElementById('sikeSound');
     const overlay = document.getElementById('overlay');
     const fallingContainer = document.getElementById('falling-container');
+    const bubblesContainer = document.getElementById('bubbles-container');
 
     let dodgeCount = 0;
     const maxDodges = 5;
     let dodging = true;
     let fallingInterval;
-    let trolls = []; // Array to track troll elements
+    let trolls = [];
 
     centerButton();
     window.addEventListener('resize', centerButton);
@@ -30,11 +30,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     button.addEventListener('click', () => {
-        input.value += ' bruh';
         laugh.currentTime = 0;
         laugh.play();
         overlay.style.opacity = "0.5";
         startFalling();
+        createBubble();
     });
 
     function centerButton() {
@@ -79,9 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
         troll.style.animationDuration = `${duration}s`;
 
         troll.dataset.speed = (Math.random() * 2 + 2).toFixed(2);
-        troll.dataset.vx = (Math.random() * 2 - 1).toFixed(2); // Horizontal speed for bouncing
+        troll.dataset.vx = (Math.random() * 2 - 1).toFixed(2);
 
-        troll.style.top = `-60px`; // Start above viewport
+        troll.style.top = `-60px`;
         fallingContainer.appendChild(troll);
 
         trolls.push(troll);
@@ -102,7 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
             top += speed;
             left += vx;
 
-            // Bounce off edges
             if (left < 0 || left > window.innerWidth - 50) {
                 vx = -vx;
                 troll.dataset.vx = vx.toFixed(2);
@@ -112,7 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
             troll.style.left = `${left}px`;
         });
 
-        // Check collisions
         for (let i = 0; i < trolls.length; i++) {
             for (let j = i + 1; j < trolls.length; j++) {
                 checkCollision(trolls[i], trolls[j]);
@@ -130,12 +128,37 @@ document.addEventListener('DOMContentLoaded', () => {
               r1.left > r2.right ||
               r1.bottom < r2.top ||
               r1.top > r2.bottom)) {
-            // Simple reaction: reverse horizontal velocity
             let vx1 = parseFloat(t1.dataset.vx);
             let vx2 = parseFloat(t2.dataset.vx);
 
             t1.dataset.vx = (-vx1).toFixed(2);
             t2.dataset.vx = (-vx2).toFixed(2);
         }
+    }
+
+    function createBubble() {
+        const bubble = document.createElement('div');
+        bubble.classList.add('bubble');
+        
+        const messages = [
+            "Bruh!", "Gotcha!", "Sike!", "LOL!", "Haha!", "Oops!", "Try again!", "Bruhhh!!!"
+        ];
+        const msg = messages[Math.floor(Math.random() * messages.length)];
+        bubble.textContent = msg;
+
+        const maxX = window.innerWidth - 150;
+        const maxY = window.innerHeight - 100;
+        const randomX = Math.floor(Math.random() * maxX);
+        const randomY = Math.floor(Math.random() * maxY);
+
+        bubble.style.left = `${randomX}px`;
+        bubble.style.top = `${randomY}px`;
+
+        bubblesContainer.appendChild(bubble);
+
+        // Remove after animation ends
+        bubble.addEventListener('animationend', () => {
+            bubble.remove();
+        });
     }
 });
